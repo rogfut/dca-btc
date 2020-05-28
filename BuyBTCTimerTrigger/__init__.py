@@ -51,5 +51,6 @@ def main(mytimer: func.TimerRequest) -> None:
         return response.json()
 
     # make deposit
-    deposit = deposit_from_bank(10.00, "USD", os.environ['ACCOUNT_ID'])
-    print(deposit)
+    logging.info('Making a live deposit to coinbase amount: %s', os.environ['DEPOSIT_AMOUNT'])
+    deposit = deposit_from_bank(os.environ['DEPOSIT_AMOUNT'], "USD", os.environ['ACCOUNT_ID'])
+    logging.info('Response from Coinbase:\n %s', deposit)
