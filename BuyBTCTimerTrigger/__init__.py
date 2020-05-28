@@ -3,6 +3,9 @@ import logging
 
 import azure.functions as func
 
+import json, hmac, hashlib, time, requests, base64, os
+from requests.auth import AuthBase
+
 class CoinbaseExchangeAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key
@@ -38,7 +41,7 @@ def main(mytimer: func.TimerRequest) -> None:
     api_url = 'https://api.pro.coinbase.com/'
     auth = CoinbaseExchangeAuth(os.environ['API_KEY'], os.environ['SECRET_KEY'], os.environ['PASSPHRASE'])
 
-        def deposit_from_bank(amount, currency, payment_id):
+    def deposit_from_bank(amount, currency, payment_id):
         payment_obj = {
             'amount': amount,
             'currency': currency,
