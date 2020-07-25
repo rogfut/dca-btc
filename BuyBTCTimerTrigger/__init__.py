@@ -6,6 +6,8 @@ import azure.functions as func
 import json, hmac, hashlib, time, requests, base64, os
 from requests.auth import AuthBase
 
+from sendmail import send_email
+
 class CoinbaseExchangeAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key
@@ -54,3 +56,21 @@ def main(mytimer: func.TimerRequest) -> None:
     logging.info('Making a live deposit to coinbase amount: %s', os.environ['DEPOSIT_AMOUNT'])
     deposit = deposit_from_bank(os.environ['DEPOSIT_AMOUNT'], "USD", os.environ['ACCOUNT_ID'])
     logging.info('Response from Coinbase:\n %s', deposit)
+
+    deposit_response_dict = json.loads(deposit)
+    if "payout_at" in deposit_response_dict:
+        # send mail with details
+        send_email(
+            os.environ['FROM_EMAIL'],
+            os.environ['TO_EMAILS'],
+            'CoinbasePro Deposit Successful',
+            "<h1>Deposited {value} to CoinbasePro</h1>".format(value=os.environ['DEPOSIT_AMOUNT'])
+        )
+    else:
+        # send failure mail with details
+        send_email(
+            os.environ['FROM_EMAIL'],
+            os.environ['TO_EMAILS'],
+            'Coinbase Purchase Failed',
+            '<h1>Unable to complete purchase. Check error logs in azure</h1>'
+        )
