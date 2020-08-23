@@ -6,7 +6,7 @@ import azure.functions as func
 import json, hmac, hashlib, time, requests, base64, os
 from requests.auth import AuthBase
 
-from sendmail import send_email
+from . import sendmail
 
 class CoinbaseExchangeAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
